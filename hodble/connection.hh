@@ -12,15 +12,35 @@
 #include <sqlext.h>
 #include <odbcinst.h>
 
-namespace ODBC {
+namespace hodble {
 
 /**
  * \class hodble::Connection
+ * \brief Class connecting to a database handling the odbc connection in the
+ *        background.
  */
 class Connection {
 public:
+
+  /**
+   * Default Constructor
+   */
   Connection();
-  Connection();
+
+  /**
+   * Construct using connection parameters
+   */
+  Connection(const std::string& host,
+             const std::string& database,
+             cppdb::port_t port,
+             const std::string& username,
+             const std::string& password);
+
+
+ /**
+  * Destructor
+  */
+  ~Connection();
 
 protected:
   // sql environment
@@ -78,6 +98,14 @@ Connection::Connection(const std::string& host,
       return 0;
   }
 
+}
+
+
+Connection::~Connection()
+{
+  SQLDisconnect(_hdbc);
+  SQLFreeHandle(SQL_HANDLE_DBC, _hdbc);
+  SQLFreeHandle(SQL_HANDLE_ENV, _env);
 }
 
 } /* namespace ODBC */
